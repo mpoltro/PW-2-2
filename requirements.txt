@@ -1,0 +1,11 @@
+flask
+flask-login
+flask-wtf
+wtforms
+flask_sqlalchemy
+pymysql
+cryptography
+python-dotenv
+mysql-connector-python==8.0.26
+requests
+user_agents

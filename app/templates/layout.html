@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html class="light-theme" lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title or "Dashboard" }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link href="/static/css/main.css" rel="stylesheet" />
+    <link href="/static/css/light.css" id="theme-style" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="navbar-left">
+        <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
+        <h1 class="navbar-title">{{ page_title or "Dashboard" }}</h1>
+      </div>
+      <div class="navbar-right">
+        <div class="user-profile-nav">
+            <div class="user-avatar-nav" style="background-color: {{ get_role_color(current_user.role) }};">
+              <i class="fas fa-user" style="color: rgb(0, 0, 0);"></i>
+            </div>
+            <div class="user-info-nav">
+              <div class="user-name-nav">{{ current_user.username }}</div>
+              <div class="user-role-nav {{ get_role_class(current_user.role) }}">
+                {{ get_role_class(current_user.role) }}
+              </div>
+            </div>
+          </div>          
+        <div class="theme-switch-wrapper">
+          <label class="theme-switch" for="checkbox">
+            <input id="checkbox" type="checkbox" />
+            <div class="slider round"></div>
+          </label>
+          <i class="fas fa-moon"></i>
+        </div>
+        <div class="last-updated" id="lastUpdated"></div>
+      </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header"><h3>Menu</h3></div>
+      <div class="sidebar-content">
+        <ul class="sidebar-menu">
+          <li class="{% if active_page == 'dashboard' %}active{% endif %}">
+            <a href="{{ url_for('dashboard') }}">
+              <i class="fas fa-tachometer-alt"></i><span>Dashboard</span>
+            </a>
+          </li>
+          {% if current_user.role == "admin"%}
+          <li class="{% if active_page == 'users' %}active{% endif %}">
+            <a href="{{ url_for('auth.users') }}">
+              <i class="fas fa-users"></i><span>Utenti</span>
+            </a>
+          </li>
+          {% endif %}
+          <li class="{% if active_page == 'history' %}active{% endif %}">
+            <a href="{{ url_for('auth.history') }}">
+              <i class="fas fa-history"></i><span>Accessi</span>
+            </a>
+          </li>
+          <li class="{% if active_page == 'suspicious_logins' %}active{% endif %}">
+            <a href="{{ url_for('suspicious_logins') }}">
+              <i class="fas fa-user-secret"></i><span>Login Sospetti</span>
+            </a>
+          </li>
+          {% if current_user.role == "admin"%}
+          <li>
+            <a href="{{ url_for('anomalies') }}"><i class="fas fa-exclamation-circle"></i><span>Anomalie</span></a>
+          </li>
+          {% endif %}         
+        </ul>
+        <div class="logout-container">
+          <form action="{{ url_for('logout') }}" class="logout-form" method="POST">
+              <button class="logout-btn" type="submit">
+                  <i class="fas fa-sign-out-alt"></i> Esci
+              </button>
+          </form>
+      </div>      
+      </div>
+    </aside>
+
+    <!-- Contenuto principale -->
+    <main class="main-content">
+      <div class="dashboard-container">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/static/js/theme.js"></script>
+    <script src="/static/js/main.js"></script>
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

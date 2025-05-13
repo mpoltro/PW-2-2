@@ -1,0 +1,134 @@
+<!-- templates/anomalies.html -->
+{% extends "layout.html" %}
+
+{% set page_title = "Anomalie" %}
+{% set active_page = "anomalies" %}
+
+{% block page_title %}Anomalie{% endblock %}
+{% block current_page %}anomalies{% endblock %}
+
+{% block content %}
+
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/anomalies.css') }}">
+<script src="{{ url_for('static', filename='js/anomalies.js') }}" defer></script>
+
+<div class="dashboard-container">
+  <div class="recent-access">
+    <h2>Anomalie di Sistema</h2>
+    
+    <div class="tabs-container">
+        <div class="tabs">
+            <button class="tab-button active" data-tab="success">
+              <span class="status-indicator status-success"></span> Log Riusciti
+            </button>
+            <button class="tab-button" data-tab="warnings">
+              <span class="status-indicator status-warning"></span> Avvisi
+            </button>
+            <button class="tab-button" data-tab="errors">
+              <span class="status-indicator status-error"></span> Errori
+            </button>
+          </div>
+      
+      <!-- Tab Log Riusciti -->
+      <div id="success-tab" class="tab-content active">
+        <div class="table-container">
+          <table id="successTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Descrizione</th>
+                <th>Azione</th>
+                <th>Data/Ora</th>
+                <th>ID Utente</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for log in success_logs %}
+              <tr>
+                <td>{{ log.Id }}</td>
+                <td>{{ log.Description }}</td>
+                <td>{{ log.Action }}</td>
+                <td>{{ log.Date_Time.strftime('%H:%M:%S %d/%m/%Y') }}</td>
+                <td>{{ log.User_Id if log.User_Id else 'Sistema' }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div id="successPagination" class="pagination-container">
+          <button id="prevSuccessPage" class="pagination-button" aria-label="Pagina precedente">◀</button>
+          <span class="page-indicator"></span>
+          <button id="nextSuccessPage" class="pagination-button" aria-label="Pagina successiva">▶</button>
+        </div>
+      </div>
+      
+      <!-- Tab Avvisi -->
+      <div id="warnings-tab" class="tab-content">
+        <div class="table-container">
+          <table id="warningsTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Descrizione</th>
+                <th>Azione</th>
+                <th>Data/Ora</th>
+                <th>ID Utente</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for log in warning_logs %}
+              <tr>
+                <td>{{ log.Id }}</td>
+                <td>{{ log.Description }}</td>
+                <td>{{ log.Action }}</td>
+                <td>{{ log.Date_Time.strftime('%H:%M:%S %d/%m/%Y') }}</td>
+                <td>{{ log.User_Id if log.User_Id else 'Sistema' }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div id="warningsPagination" class="pagination-container">
+          <button id="prevWarningsPage" class="pagination-button" aria-label="Pagina precedente">◀</button>
+          <span class="page-indicator"></span>
+          <button id="nextWarningsPage" class="pagination-button" aria-label="Pagina successiva">▶</button>
+        </div>
+      </div>
+      
+      <!-- Tab Errori -->
+      <div id="errors-tab" class="tab-content">
+        <div class="table-container">
+          <table id="errorsTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Descrizione</th>
+                <th>Azione</th>
+                <th>Data/Ora</th>
+                <th>ID Utente</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for log in error_logs %}
+              <tr>
+                <td>{{ log.Id }}</td>
+                <td>{{ log.Description }}</td>
+                <td>{{ log.Action }}</td>
+                <td>{{ log.Date_Time.strftime('%H:%M:%S %d/%m/%Y') }}</td>
+                <td>{{ log.User_Id if log.User_Id else 'Sistema' }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div id="errorsPagination" class="pagination-container">
+          <button id="prevErrorsPage" class="pagination-button" aria-label="Pagina precedente">◀</button>
+          <span class="page-indicator"></span>
+          <button id="nextErrorsPage" class="pagination-button" aria-label="Pagina successiva">▶</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

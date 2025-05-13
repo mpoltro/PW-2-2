@@ -1,0 +1,58 @@
+<!-- templates/history.html -->
+{% extends "layout.html" %}
+
+{% set page_title = "Storico Accessi" %}
+{% set active_page = "history" %}
+
+{% block page_title %}Storico Accessi{% endblock %}
+{% block current_page %}history{% endblock %}
+
+{% block content %}
+
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/history.css') }}">
+<script src="{{ url_for('static', filename='js/history.js') }}" defer></script>
+
+<div class="dashboard-container">
+  <div class="recent-access">
+    <div class="recent-access-header">
+      <h2>Storico Accessi</h2>
+    </div>
+    <div class="table-container">
+      <table id="historyTable">
+        <thead>
+          <tr>
+            <th>Utente</th>
+            <th>Stato</th>
+            <th>Nazione</th>
+            <th>Città</th>
+            <th>Luogo</th>
+            <th>Data Accesso</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+          <tr>
+            <td>{{ log.Username }}</td>
+            <td>
+              <span class="status-badge {{ 'status-success' if log.Status == 'riuscito' else 'status-failed' }}">
+                {{ 'Riuscito' if log.Status == 'riuscito' else 'Fallito' }}
+              </span>
+            </td>
+            <td>{{ log.Nation }}</td>
+            <td>{{ log.Location }}</td>
+            <td>{{ log.Location_Name }}</td>
+            <td>{{ log.data_accesso.strftime('%H:%M:%S %d/%m/%Y') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div id="historyPagination" class="pagination-container">
+      <button id="prevPage" class="pagination-button" aria-label="Pagina precedente">◀</button>
+      <span class="page-indicator"></span>
+      <button id="nextPage" class="pagination-button" aria-label="Pagina successiva">▶</button>
+    </div>
+  </div>
+</div>
+{% endblock %}

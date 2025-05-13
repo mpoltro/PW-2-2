@@ -1,0 +1,215 @@
+{% extends "layout.html" %}
+{% set page_title = "Gestione Utenti" %}
+{% set active_page = "users" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/users.css">
+{% endblock %}
+
+{% block content %}
+<script>
+  const roleDistribution = {{ role_distribution|tojson|safe }};
+  const accessiOggi = {{ daily_access|tojson|safe }};
+</script>
+<head>
+  <style>
+    .checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-checkbox {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.optional-text {
+  color: #666;
+  font-size: 0.9em;
+}
+  </style>
+</head>
+<!-- Grafici -->
+<div class="chart-row" style="display: flex; gap: 20px;">
+  <div class="chart-container" style="flex: 1;">
+    <div class="chart-header">
+      <h2><i class="fas fa-chart-pie"></i> Distribuzione Utenti</h2>
+      <div class="chart-legend" id="chartLegend"></div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="usersChart"></canvas>
+    </div>
+  </div>
+  <div class="chart-container" style="flex: 1;">
+    <div class="chart-header">
+      <h2><i class="fas fa-chart-pie"></i> Accessi Giornalieri per Utente</h2>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="accessiOggiChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Form e lista utenti -->
+<div class="user-management-grid">
+  <!-- Aggiungi utente -->
+  <div class="user-card">
+    <div class="card-header"><h2><i class="fas fa-user-plus"></i>Aggiungi Utente</h2></div>
+    <div class="card-body">
+      <form class="user-form" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <label class="form-label" for="Username">Username</label>
+          <input type="text" id="Username" name="Username" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Email</label>
+          <input type="text" id="email" name="email" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="photo">Foto</label>
+          <input type="file" id="photo" name="photo" class="form-input" accept="image/*">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="role">Ruolo</label>
+          <select id="role" name="role" class="form-input" required>
+            <option value="">Seleziona ruolo</option>
+            <option value="admin">Amministratore</option>
+            <option value="user">Utente Standard</option>
+            <option value="guest">Ospite</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="location">Badge</label>
+          <select id="location" name="location" class="form-input" required>
+            <option value="">Seleziona sede</option>
+            <option value="Lepida">Bologna (Lepida)</option>
+            <option value="Bigari">Bologna (VIa Bigari)</option>
+            <option value="Agrigento">Ferrara (Agrigento)</option>
+            <option value="Centro">Ferrara (Centro)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-plus"></i>Aggiungi utente
+        </button>
+      </form>
+      {% if error %}
+      <div class="error-message">
+        <i class="fas fa-exclamation-triangle"></i> {{ error }}
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Lista utenti -->
+  <div class="user-card">
+    <div class="card-header">
+      <h2><i class="fas fa-users"></i>Utenti Registrati</h2>
+      <div class="user-count">{{ users|length }} utenti</div>
+    </div>
+    <div class="card-body">
+      <div class="user-list">
+        {% for user in users %}
+        {% if user.Username != "Sconosciuto" %}
+        <div class="user-item">
+          <div class="user-info">
+            <div class="user-avatar {{ get_role_class(user.role) }}" style="background-color: {{ get_role_color(user.role) }};">
+              <i class="fas fa-user"></i>
+            </div>
+            <div>
+              <div class="user-name">
+                {{ user.Username }}
+                <span class="user-role" style="color: {{ get_role_color(user.role) }}">
+                  {{ get_role_class(user.role) }}
+                </span>
+              </div>
+              <div class="user-details">
+                <span class="last-login">Ultimo accesso: {{ user.last_login.strftime('%H:%M %d/%m/%Y') if user.last_login else 'Mai' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="user-actions">
+            <button class="btn-icon edit-user" data-userid="{{ user.id }}"><i class="fas fa-edit"></i></button>
+            <button class="btn-icon delete-user" data-userid="{{ user.id }}"><i class="fas fa-trash-alt"></i></button>
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modale modifica utente -->
+<div class="modal" id="editUserModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Modifica Utente</h3>
+      <button class="close-modal">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <form id="editUserForm" class="user-form">
+        <input type="hidden" id="editUserId">
+        
+        <div class="form-group">
+          <label for="editUsername" class="form-label">Username</label>
+          <input type="text" id="editUsername" class="form-input" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="editRole" class="form-label">Ruolo</label>
+          <select id="editRole" class="form-input" required>
+            <option value="admin">Amministratore</option>
+            <option value="user">Utente Standard</option>
+            <option value="guest">Ospite</option>
+          </select>
+        </div>
+        
+        <div class="form-group checkbox-group">
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="editPassword" class="form-checkbox">
+            <label for="editPassword">Genera Nuova Password</label>
+          </div>
+          <span class="optional-text">(opzionale)</span>
+        </div>
+      </form>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary close-modal">Annulla</button>
+      <button class="btn btn-primary" id="saveUserChanges">Salva Modifiche</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modale eliminazione -->
+<div class="modal" id="deleteUserModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Conferma Eliminazione</h3>
+      <button class="close-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p id="deleteUserMessage">Sei sicuro di voler eliminare questo utente?</p>
+      <input type="hidden" id="deleteUserId">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary close-modal">Annulla</button>
+      <button class="btn btn-primary" id="confirmDeleteUser">Conferma</button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/user.js"></script>
+{% endblock %}

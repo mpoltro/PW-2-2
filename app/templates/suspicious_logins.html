@@ -1,0 +1,106 @@
+<!-- templates/suspicious_logins.html -->
+{% extends "layout.html" %}
+
+{% set page_title = "Login Sospetti" %}
+{% set active_page = "suspicious_logins" %}
+
+{% block page_title %}Login Sospetti{% endblock %}
+{% block current_page %}suspicious_logins{% endblock %}
+
+{% block content %}
+
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/anomalies.css') }}">
+<script src="{{ url_for('static', filename='js/suspicious_logins.js') }}" defer></script>
+
+<div class="dashboard-container">
+  <div class="recent-access">
+    <h2>Login Sospetti</h2>
+    
+    <div class="tabs-container">
+        <div class="tabs">
+            <button class="tab-button active" data-tab="authorized">
+              <span class="status-indicator status-success"></span> Accessi Autorizzati
+            </button>
+            <button class="tab-button" data-tab="denied">
+              <span class="status-indicator status-error"></span> Accessi Negati
+            </button>
+        </div>
+      
+      <!-- Tab Accessi Autorizzati -->
+      <div id="authorized-tab" class="tab-content active">
+        <div class="table-container">
+          <table id="authorizedTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Stato</th>
+                <th>IP</th>
+                <th>Dispositivo</th>
+                <th>Località</th>
+                <th>Data/Ora</th>
+                <th>ID Utente</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for access in authorized_accesses %}
+              <tr>
+                <td>{{ access.Id }}</td>
+                <td>{{ access.Status }}</td>
+                <td>{{ access.IP_Address }}</td>
+                <td>{{ access.Device_Info|truncate(30) }}</td>
+                <td>{{ access.Location }}</td>
+                <td>{{ access.Created_At.strftime('%H:%M:%S %d/%m/%Y') }}</td>
+                <td>{{ access.User_Id }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div id="authorizedPagination" class="pagination-container">
+          <button id="prevAuthorizedPage" class="pagination-button" aria-label="Pagina precedente">◀</button>
+          <span class="page-indicator"></span>
+          <button id="nextAuthorizedPage" class="pagination-button" aria-label="Pagina successiva">▶</button>
+        </div>
+      </div>
+      
+      <!-- Tab Accessi Negati -->
+      <div id="denied-tab" class="tab-content">
+        <div class="table-container">
+          <table id="deniedTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Stato</th>
+                <th>IP</th>
+                <th>Dispositivo</th>
+                <th>Località</th>
+                <th>Data/Ora</th>
+                <th>ID Utente</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for access in denied_accesses %}
+              <tr>
+                <td>{{ access.Id }}</td>
+                <td>{{ access.Status }}</td>
+                <td>{{ access.IP_Address }}</td>
+                <td>{{ access.Device_Info|truncate(30) }}</td>
+                <td>{{ access.Location }}</td>
+                <td>{{ access.Created_At.strftime('%H:%M:%S %d/%m/%Y') }}</td>
+                <td>{{ access.User_Id }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div id="deniedPagination" class="pagination-container">
+          <button id="prevDeniedPage" class="pagination-button" aria-label="Pagina precedente">◀</button>
+          <span class="page-indicator"></span>
+          <button id="nextDeniedPage" class="pagination-button" aria-label="Pagina successiva">▶</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

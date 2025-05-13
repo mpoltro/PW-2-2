@@ -1,0 +1,183 @@
+:root {
+    /* Nuova palette colori professionali */
+    --primary: #3a86ff;         /* Blu moderno */
+    --primary-light: #8bb8ff;
+    --success: #06d6a0;         /* Verde acqua */
+    --danger: #ef476f;          /* Rosso corallo */
+    --warning: #ffd166;         /* Giallo dorato */
+    --info: #118ab2;            /* Blu scuro */
+    
+    /* Tonalità neutre */
+    --bg-color: #f8f9fa;
+    --card-bg: #ffffff;
+    --text-color: #2b2d42;
+    --text-secondary: #6c757d;
+    --border-color: #e9ecef;
+    
+    /* Sidebar */
+    --sidebar-bg: #2b2d42;
+    --sidebar-text: #ffffff;
+    --sidebar-active: var(--primary);
+    
+    /* Navbar */
+    --navbar-bg: #2b2d42;
+    --navbar-text: #ffffff;
+    --navbar-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    
+    /* User profile in navbar */
+    --user-nav-bg: rgba(255, 255, 255, 0.2);
+    --user-nav-bg-hover: rgba(255, 255, 255, 0.3);
+    --user-nav-text: #ffffff;
+    --user-nav-role: rgba(255, 255, 255, 0.7);
+}
+
+/* Nuovi stili per le stat cards */
+.stat-card {
+    position: relative;
+    overflow: hidden;
+    border: none;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--primary);
+}
+
+.stat-card.success::before {
+    background: var(--success);
+}
+
+.stat-card.failed::before {
+    background: var(--danger);
+}
+
+.stat-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.stat-card p {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-color);
+    position: relative;
+}
+
+/* Animazione al hover */
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+}
+
+/* Spinner migliorato */
+.spinner {
+    border: 3px solid rgba(58, 134, 255, 0.2);
+    border-top-color: var(--primary);
+    width: 24px;
+    height: 24px;
+    animation: spin 0.8s linear infinite;
+}
+
+/* Status badge migliorati */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.status-success {
+    background-color: rgba(6, 214, 160, 0.1);
+    color: var(--success);
+}
+
+.status-failed {
+    background-color: rgba(239, 71, 111, 0.1);
+    color: var(--danger);
+}
+
+/* Stili per la navbar utente */
+.user-profile-nav {
+    background-color: var(--navbar-bg);
+    border-radius: 999px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+}
+
+.user-profile-nav:hover {
+    background-color: var(--user-nav-bg-hover);
+    transform: scale(1.02);
+}
+
+.user-avatar-nav {
+    font-size: 1.8rem;
+    color: var(--primary);
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.user-info-nav {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.user-name-nav {
+    font-weight: 600;
+    color: var(--user-nav-text);
+    font-size: 0.95rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-role-nav {
+    font-size: 0.75rem;
+    color: var(--user-nav-role);
+    opacity: 0.9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.Amministratore { color: rgba(54, 162, 235, 1); }
+.Utente { color: rgba(75, 192, 192, 1); }
+.Ospite { color: rgba(255, 159, 64, 1); }
+
+@media (max-width: 768px) {
+    .user-profile-nav {
+    background-color: var(--navbar-bg);
+    border-radius: 999px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+}
+    
+    .user-name-nav, .user-role-nav {
+        display: none;
+    }
+    
+    .user-avatar-nav {
+        margin-right: 0;
+        font-size: 1.5rem;
+    }
+}

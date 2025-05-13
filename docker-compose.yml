@@ -1,0 +1,85 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app:/app
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_USER=flaskuser
+      - MYSQL_PASSWORD=flaskpass
+      - MYSQL_DB=usersdb
+      - MYSQL_HOST_DB1=db1
+      - MYSQL_USER_DB1=flaskuser
+      - MYSQL_PASSWORD_DB1=flaskpass
+      - MYSQL_DB_DB1=logsdb
+    depends_on:
+      db:
+        condition: service_healthy
+      db1:
+        condition: service_healthy
+
+  db:
+    container_name: db-1
+    image: mysql:8.4
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - MYSQL_DATABASE=usersdb
+      - MYSQL_USER=flaskuser
+      - MYSQL_PASSWORD=flaskpass
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  db1:
+    container_name: db-2
+    image: mysql:8.4
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - MYSQL_DATABASE=logsdb
+      - MYSQL_USER=flaskuser
+      - MYSQL_PASSWORD=flaskpass
+    volumes:
+      - mysql_data1:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  phpmyadmin-1:
+    container_name: phpmyadmin-1
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=flaskuser
+      - PMA_PASSWORD=flaskpass
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+  phpmyadmin-2:
+    container_name: phpmyadmin-2
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=db1
+      - PMA_USER=flaskuser
+      - PMA_PASSWORD=flaskpass
+    ports:
+      - "8081:80"
+    depends_on:
+      - db1
+
+volumes:
+  mysql_data:
+  mysql_data1:

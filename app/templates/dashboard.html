@@ -1,0 +1,111 @@
+{% extends "layout.html" %}
+{% set page_title = "Dashboard Accessi" %}
+{% set active_page = "dashboard" %}
+
+
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flashed-messages">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          <i class="fas fa-exclamation-circle"></i>
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- Statistiche -->
+<div class="stats-grid">
+  <div class="stat-card total">
+    <h3>Accessi Totali</h3>
+    <div class="stat-value" id="total-access"> 
+      <div class="spinner"></div>
+    </div>
+  </div>
+  <div class="stat-card success">
+    <h3>Accessi Riusciti</h3>
+    <div class="stat-value" id="success-access">
+      <div class="spinner"></div>
+    </div>
+  </div>
+  <div class="stat-card failed">
+    <h3>Accessi Falliti</h3>
+    <div class="stat-value" id="failed-access">
+      <div class="spinner"></div>
+    </div>
+  </div>
+  <div class="stat-card today">
+    <h3>Accessi Oggi</h3>
+    <div class="stat-value" id="today-access">
+      <div class="spinner"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Grafici -->
+<div class="chart-container">
+  <div class="chart-card">
+    <h2>Accessi Ultimi 7 Giorni</h2>
+    <div class="chart-wrapper">
+      <canvas id="weeklyChart"></canvas>
+      <div class="loading" id="weeklyLoading">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <h2>Accessi per Utente</h2>
+    <div class="chart-wrapper">
+      <canvas id="userChart"></canvas>
+      <div class="loading" id="userLoading">
+        <div class="spinner"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Accessi Recenti -->
+<div class="recent-access">
+  <div class="recent-access-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <h2>Ultimi 10 Accessi</h2>
+      <div style="display: flex; gap: 10px;">
+        <button class="refresh-btn" id="refreshBtn">
+          <i class="fas fa-sync-alt"></i> Aggiorna
+        </button>
+        {% if current_user.role == "admin" %}
+        <form method="get" action="{{ url_for('scarica_logs') }}">
+          <button class="refresh-btn" type="submit"><i class="fas fa-download"></i> Scarica Logs
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="table-container" style="overflow-x: auto;">
+    <table id="recentAccessTable" style="width: auto; min-width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th style="padding: 8px 12px; text-align: left; width: auto; min-width: 120px;">Utente</th>
+          <th style="padding: 8px 12px; text-align: left; width: auto; min-width: 80px;">Stato</th>
+          <th style="padding: 8px 12px; text-align: left; width: auto; min-width: 150px;">Location</th>
+          <th style="padding: 8px 12px; text-align: left; width: auto; min-width: 160px;">Data Accesso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="loading-table" colspan="4" style="padding: 12px; text-align: center;">
+            <div class="spinner"></div>
+            <span>Caricamento dati...</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
